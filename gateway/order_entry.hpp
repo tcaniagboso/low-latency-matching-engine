@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <optional>
 
-#include "../types/types.hpp"
+#include "../core/types.hpp"
 
 namespace gateway {
 

@@ -10,6 +10,7 @@ namespace types {
 
     using Symbol = uint32_t;
 
+    using TradeId = uint64_t;
     using OrderId = uint64_t;
     using Quantity = uint64_t;
     using PriceT = int64_t;

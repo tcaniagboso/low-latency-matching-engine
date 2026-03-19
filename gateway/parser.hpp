@@ -1,18 +1,18 @@
 #include <string>
 
-#include "../types/types.hpp"
+#include "../core/types.hpp"
 
 namespace gateway {
 
-    inline void to_lower(std::string &s);
+    void to_lower(std::string &s);
 
-    inline void to_upper(std::string &s);
+    void to_upper(std::string &s);
 
-    inline types::Side parse_side(std::string &side);
+    types::Side parse_side(std::string &side);
 
-    inline types::OrderType parse_order_type(std::string &order_type);
+    types::OrderType parse_order_type(std::string &order_type);
 
-    inline types::Quantity parse_quantity(const std::string &quantity);
+    types::Quantity parse_quantity(const std::string &quantity);
 
-    inline types::PriceT parse_price(const std::string &price);
+    types::PriceT parse_price(const std::string &price);
 } // namespace gateway

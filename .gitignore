@@ -1,11 +1,16 @@
-# CLion / JetBrains
+# IDE / Editor
 .idea/
+.vscode/
+*.swp
+*.swo
 
-# CMake build directories
+# Build directories
 cmake-build-*/
 build/
+out/
+dist/
 
-# Compiler outputs
+# Binaries / Compiler outputs
 *.o
 *.obj
 *.so
@@ -16,10 +21,11 @@ build/
 *.exe
 *.out
 
-# CMake generated files
+# CMake Generated Files
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
+compile_commands.json
 Makefile
 
 # OS-specific files
@@ -28,3 +34,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Project Specific
+components.txt
+
+
