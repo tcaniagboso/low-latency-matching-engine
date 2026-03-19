@@ -9,7 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Core Library
 # =========================
 add_library(engine_core
-        order_book/simple_order_book.cpp
+        order_book/list_order_book.cpp
         engine/matching_engine.cpp
         gateway/parser.cpp
 )

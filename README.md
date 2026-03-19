@@ -12,7 +12,7 @@ The current implementation includes:
     - Limit orders
     - Market orders
     - Order cancellation
-- Order book structure with:
+- An `std::list` Order book structure with:
     - Bid/ask price levels
     - Per-level FIFO queues
 - Trade generation and tracking

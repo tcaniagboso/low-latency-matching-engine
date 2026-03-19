@@ -6,7 +6,7 @@
 #include "../core/id_generator.hpp"
 #include "../core/types.hpp"
 #include "../core/time.hpp"
-#include "../order_book/simple_order_book.hpp"
+#include "../order_book/list_order_book.hpp"
 
 namespace engine {
 
@@ -43,11 +43,11 @@ namespace engine {
     private:
         id::OrderIdGenerator order_id_gen_;
         id::TradeIdGenerator trade_id_gen_;
-        order_book::SimpleOrderBook order_book_;
+        order_book::ListOrderBook order_book_;
         std::vector<Trade> fulfilled_;
 
         static inline types::Quantity consume_level(
-                order_book::SimpleOrderBook &order_book,
+                order_book::ListOrderBook &order_book,
                 types::Quantity &quantity,
                 std::list<order_book::RestingOrder> &queue
         ) {

@@ -36,7 +36,7 @@ namespace order_book {
     };
 
     // Price Time Priority Order Book
-    class SimpleOrderBook {
+    class ListOrderBook {
     private:
         std::unordered_map<types::OrderId, Locator> live_orders_;
         std::unordered_map<types::Symbol, std::map<types::PriceT, Queue, std::less<>>> asks_;
@@ -49,7 +49,7 @@ namespace order_book {
         );
 
     public:
-        SimpleOrderBook();
+        ListOrderBook();
 
         // inserts
         void add_limit_buy(
