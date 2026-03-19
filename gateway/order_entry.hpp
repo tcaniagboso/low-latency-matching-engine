@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "../core/time.hpp"
 #include "../core/types.hpp"
 
 namespace gateway {
@@ -14,7 +15,7 @@ namespace gateway {
         types::OrderType type_;
         types::Quantity quantity_;
         std::optional<types::PriceT> price_;
-        types::TimePt timestamp_{std::chrono::steady_clock::now()};
+        types::TimePt timestamp_{time_utils::now()};
 
         // Constructor for Market Order
         NewOrder(uint64_t id, uint32_t symbol, uint8_t side, uint8_t type, uint64_t quantity)
@@ -33,7 +34,7 @@ namespace gateway {
 
     struct CancelOrder {
         types::OrderId id_;
-        types::TimePt timestamp_{std::chrono::steady_clock::now()};
+        types::TimePt timestamp_{time_utils::now()};
 
         explicit CancelOrder(uint64_t id) : id_{id} {}
     };

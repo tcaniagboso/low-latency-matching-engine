@@ -8,7 +8,7 @@
 namespace time_utils {
 
     inline types::TimePt now() {
-        return std::chrono::steady_clock::now();
+        return std::chrono::system_clock::now();
     }
 
     inline std::string time_point_to_string(types::TimePt tp) {

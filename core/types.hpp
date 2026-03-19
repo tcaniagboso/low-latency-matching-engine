@@ -15,5 +15,5 @@ namespace types {
     using Quantity = uint64_t;
     using PriceT = int64_t;
 
-    using TimePt = std::chrono::steady_clock::time_point;
+    using TimePt = std::chrono::system_clock::time_point;
 } // namespace types
