@@ -12,17 +12,19 @@ The current implementation includes:
     - Limit orders
     - Market orders
     - Order cancellation
-- An `std::list` Order book structure with:
-    - Bid/ask price levels
-    - Per-level FIFO queues
+- Multiple order book implementations:
+  - `ListOrderBook` (eager deletion using `std::list`)
+  - `DequeOrderBook` (lazy deletion using `std::deque`)
 - Trade generation and tracking
 - ID generation for orders and trades
 
+The system is designed to allow plug-and-play order book strategies via a templated matching engine.
+
 The matching logic is implemented with careful attention to:
 
-- predictable control flow
-- minimal branching in hot paths
-- clean separation between matching engine and order book
+- Predictable control flow
+- Minimal branching in hot paths
+- Clean separation between matching logic and data structure behavior
 
 ---
 
@@ -31,10 +33,10 @@ This project is not just about correctness. It is about building a system that m
 
 Key goals:
 - Low latency execution
-- Cache-friendly data structures (future work)
+- Cache-aware data structures
 - Deterministic behavior under load
 - Clear separation of responsibilities (engine vs order book)
-- Incremental optimization from a correct baseline
+- Ability to experiment with multiple implementations
 
 ---
 
@@ -49,6 +51,39 @@ MatchingEngine
 
 ```
 
+### Key Idea
+The matching engine is **templated on the order book type**, allowing different data structures to define behavior without introducing runtime overhead.
+
+---
+
+## Order Book Implementations
+
+### ListOrderBook
+- Uses `std::list` per price level
+- Immediate removal on cancel
+- Clean matching loop (no inactive orders)
+- Higher cancellation cost due to deeper lookups
+
+### DequeOrderBook
+- Uses `std::deque` per price level
+
+- **Lazy deletion strategy:**
+  - Cancel = mark inactive
+  - Match = clean up during traversal
+- O(1) cancellation
+- Slightly more complex matching loop
+
+---
+
+## Experimental Direction
+A key focus of this project is **comparing order book designs under realistic workloads**.
+
+This includes evaluating trade-offs in:
+- Latency
+- Memory access patterns
+- Cancellation efficiency
+- Matching throughput
+
 ---
 
 ## Ongoing Work
@@ -56,23 +91,10 @@ This repository is actively evolving. Upcoming improvements include:
 - Unit and stress testing for correctness guarantees
 - Benchmarking and latency measurement
 - Alternative order book implementations:
-  - `std::deque`-based queues
   - Intrusive data structures
   - Cache-optimized layouts
 - Replacing `std::map` with flat or indexed structures
-- Exploring lazy cancellation vs direct removal
 - Memory optimization (custom allocators / arenas)
-
---- 
-
-## Experimental Direction
-A key focus of this project is **prototyping multiple order book designs** and evaluating their trade-offs in:
-- Latency
-- Memory access patterns
-- Cancellation efficiency
-- Scalability
-
-This will allow direct comparison of different approaches used in real-world trading systems.
 
 ---
 

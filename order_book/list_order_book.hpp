@@ -5,48 +5,44 @@
 #include <unordered_map>
 
 #include "../core/types.hpp"
+#include "../core/resting_order.hpp"
 
 namespace order_book {
-    struct RestingOrder {
-        types::OrderId id_;
-        types::Quantity remaining_;
-        types::TimePt timestamp_;
-
-        RestingOrder(types::OrderId id, types::Quantity remaining, types::TimePt timestamp)
-                : id_{id},
-                  remaining_{remaining},
-                  timestamp_{timestamp} {}
-    };
-
-    using Queue = std::list<RestingOrder>;
-    using AskMap = std::map<types::PriceT, Queue, std::less<>>;
-    using BidMap = std::map<types::PriceT, Queue, std::greater<>>;
-
-    struct Locator {
-        types::Symbol symbol_;
-        types::Side side_;
-        types::PriceT price_;
-        Queue::iterator position_;
-
-        Locator(types::Symbol symbol, types::Side side, types::PriceT price, Queue::iterator position)
-                : symbol_{symbol},
-                  side_{side},
-                  price_{price},
-                  position_{position} {}
-    };
-
     // Price Time Priority Order Book
     class ListOrderBook {
-    private:
-        std::unordered_map<types::OrderId, Locator> live_orders_;
-        std::unordered_map<types::Symbol, std::map<types::PriceT, Queue, std::less<>>> asks_;
-        std::unordered_map<types::Symbol, std::map<types::PriceT, Queue, std::greater<>>> bids_;
-        static AskMap empty_asks_;
-        static BidMap empty_bids_;
+        using Queue = std::list<core::RestingOrder>;
+        using AskMap = std::map<types::PriceT, ListOrderBook::Queue, std::less<>>;
+        using BidMap = std::map<types::PriceT, ListOrderBook::Queue, std::greater<>>;
 
-        void add_order(types::Symbol symbol, types::OrderId id, types::PriceT price,
-                       types::Quantity quantity, types::Side side
-        );
+    private:
+        struct Locator {
+            types::Symbol symbol_;
+            types::Side side_;
+            types::PriceT price_;
+            ListOrderBook::Queue::iterator position_;
+
+            Locator(types::Symbol symbol, types::Side side, types::PriceT price, Queue::iterator position)
+                    : symbol_{symbol},
+                      side_{side},
+                      price_{price},
+                      position_{position} {}
+        };
+
+        std::unordered_map<types::OrderId, Locator> live_orders_;
+        std::unordered_map<types::Symbol, ListOrderBook::AskMap> asks_;
+        std::unordered_map<types::Symbol, ListOrderBook::BidMap> bids_;
+        static ListOrderBook::AskMap empty_asks_;
+        static ListOrderBook::BidMap empty_bids_;
+
+//        void erase_locator(types::OrderId id);
+
+//        void add_order(
+//                types::Symbol symbol,
+//                types::OrderId id,
+//                types::PriceT price,
+//                types::Quantity quantity,
+//                types::Side side
+//        );
 
     public:
         ListOrderBook();
@@ -54,7 +50,8 @@ namespace order_book {
         // inserts
         void add_limit_buy(
                 types::Symbol symbol,
-                types::OrderId id, types::PriceT price,
+                types::OrderId id,
+                types::PriceT price,
                 types::Quantity quantity
         );
 
@@ -68,23 +65,34 @@ namespace order_book {
         // cancels
         bool cancel(types::OrderId id);
 
-        void erase_locator(types::OrderId id);
+        ListOrderBook::AskMap::iterator remove_asks_level(
+                types::Symbol symbol,
+                ListOrderBook::AskMap::iterator it
+        );
 
-        AskMap::iterator remove_asks_level(types::Symbol symbol, AskMap::iterator it);
-
-        BidMap::iterator remove_bids_level(types::Symbol symbol, BidMap::iterator it);
+        ListOrderBook::BidMap::iterator remove_bids_level(
+                types::Symbol symbol,
+                ListOrderBook::BidMap::iterator it
+        );
 
         // Queries
-        bool has_asks(types::Symbol symbol) const;
+//        bool has_asks(types::Symbol symbol) const;
+//
+//        bool has_bids(types::Symbol symbol) const;
 
-        bool has_bids(types::Symbol symbol) const;
+        bool level_empty(Queue &queue);
 
-        AskMap::iterator asks_begin(types::Symbol symbol);
+        ListOrderBook::AskMap::iterator asks_begin(types::Symbol symbol);
 
-        AskMap::iterator asks_end(types::Symbol symbol);
+        ListOrderBook::AskMap::iterator asks_end(types::Symbol symbol);
 
-        BidMap::iterator bids_begin(types::Symbol symbol);
+        ListOrderBook::BidMap::iterator bids_begin(types::Symbol symbol);
 
-        BidMap::iterator bids_end(types::Symbol symbol);
+        ListOrderBook::BidMap::iterator bids_end(types::Symbol symbol);
+
+        types::Quantity consume_level(
+                types::Quantity &quantity,
+                ListOrderBook::Queue &queue
+        );
     };
 } // namespace order_book
