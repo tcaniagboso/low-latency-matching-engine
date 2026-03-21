@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include "../core/id_generator.hpp"
@@ -46,15 +47,25 @@ namespace engine {
         OrderBookT order_book_;
         std::vector<Trade> fulfilled_;
 
-        void match(types::OrderType type, types::Symbol symbol, types::PriceT price, types::Quantity quantity,
-                   types::Side side);
+        std::optional<types::OrderId>
+        match(
+              types::OrderType type,
+              types::Symbol symbol,
+              types::PriceT price,
+              types::Quantity quantity,
+              types::Side side
+        );
 
     public:
         MatchingEngine();
 
-        void limit_buy(types::Symbol symbol, types::PriceT price, types::Quantity quantity);
+        [[nodiscard]] const std::vector<Trade> &get_trades() const {
+            return fulfilled_;
+        }
 
-        void limit_sell(types::Symbol symbol, types::PriceT price, types::Quantity quantity);
+        types::OrderId limit_buy(types::Symbol symbol, types::PriceT price, types::Quantity quantity);
+
+        types::OrderId limit_sell(types::Symbol symbol, types::PriceT price, types::Quantity quantity);
 
         void market_buy(types::Symbol symbol, types::Quantity quantity);
 
@@ -71,14 +82,14 @@ namespace engine {
               fulfilled_{} {}
 
     template<typename OrderBookT>
-    void MatchingEngine<OrderBookT>::match(
+    std::optional<types::OrderId> MatchingEngine<OrderBookT>::match(
             types::OrderType type,
             types::Symbol symbol,
             types::PriceT price,
             types::Quantity quantity,
             types::Side side
     ) {
-        if (quantity == 0) return;
+        if (quantity == 0) return {};
 
         bool is_market = (type == types::OrderType::MARKET);
         bool is_buy = (side == types::Side::BUY);
@@ -115,7 +126,9 @@ namespace engine {
                 }
 
                 if (quantity > 0) {
-                    order_book_.add_limit_buy(symbol, order_id_gen_.next(), price, quantity);
+                    auto order_id = order_id_gen_.next();
+                    order_book_.add_limit_buy(symbol, order_id, price, quantity);
+                    return {order_id};
                 }
             }
         } else {
@@ -150,20 +163,34 @@ namespace engine {
                 }
 
                 if (quantity > 0) {
-                    order_book_.add_limit_sell(symbol, order_id_gen_.next(), price, quantity);
+                    auto order_id = order_id_gen_.next();
+                    order_book_.add_limit_sell(symbol, order_id, price, quantity);
+                    return {order_id};
                 }
             }
         }
+
+        return {};
     }
 
     template<typename OrderBookT>
-    void MatchingEngine<OrderBookT>::limit_buy(types::Symbol symbol, types::PriceT price, types::Quantity quantity) {
-        match(types::OrderType::LIMIT, symbol, price, quantity, types::Side::BUY);
+    types::OrderId MatchingEngine<OrderBookT>::limit_buy(
+            types::Symbol symbol,
+            types::PriceT price,
+            types::Quantity quantity
+    ) {
+        auto res = match(types::OrderType::LIMIT, symbol, price, quantity, types::Side::BUY);
+        return res.value_or(types::OrderId{0});
     }
 
     template<typename OrderBookT>
-    void MatchingEngine<OrderBookT>::limit_sell(types::Symbol symbol, types::PriceT price, types::Quantity quantity) {
-        match(types::OrderType::LIMIT, symbol, price, quantity, types::Side::SELL);
+    types::OrderId MatchingEngine<OrderBookT>::limit_sell(
+            types::Symbol symbol,
+            types::PriceT price,
+            types::Quantity quantity
+    ) {
+        auto res = match(types::OrderType::LIMIT, symbol, price, quantity, types::Side::SELL);
+        return res.value_or(types::OrderId{0});
     }
 
     template<typename OrderBookT>
@@ -191,6 +218,5 @@ namespace engine {
             fulfilled_[i].print();
             if (i < n - 1) std::cout << '\n';
         }
-
     }
 } // namespace engine
