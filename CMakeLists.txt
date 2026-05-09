@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(TradeEngine)
+project(TradeEngine LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,16 +14,29 @@ add_library(engine_core
         src/gateway/parser.cpp
 )
 
-target_include_directories(engine_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(engine_core
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-target_compile_options(engine_core PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(engine_core
+        PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+)
 
 # =========================
 # Main Executable
 # =========================
-add_executable(trade_engine main.cpp)
+add_executable(trade_engine
+        main.cpp
+)
 
-target_link_libraries(trade_engine PRIVATE engine_core)
+target_link_libraries(trade_engine
+        PRIVATE
+        engine_core
+)
 
 # =========================
 # Testing (future)
