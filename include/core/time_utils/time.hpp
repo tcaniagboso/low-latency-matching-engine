@@ -3,15 +3,16 @@
 #include <chrono>
 #include <iomanip>
 
-#include "types.hpp"
+#include "../types/types.hpp"
 
-namespace time_utils {
+namespace core::time_utils {
+    using TimePt = core::types::TimePt;
 
-    inline types::TimePt now() {
+    inline TimePt now() {
         return std::chrono::system_clock::now();
     }
 
-    inline std::string time_point_to_string(types::TimePt tp) {
+    inline std::string time_point_to_string(TimePt tp) {
         std::time_t t = std::chrono::system_clock::to_time_t(tp);
 
         std::tm tm = *std::localtime(&t);
@@ -30,4 +31,4 @@ namespace time_utils {
         return ss.str();
     }
 
-} // namespace time_utils
+} // namespace core::time_utils

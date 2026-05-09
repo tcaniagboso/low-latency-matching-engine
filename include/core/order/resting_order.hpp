@@ -2,17 +2,17 @@
 
 #include "types.hpp"
 
-namespace core {
+namespace core::order {
     struct RestingOrder {
-        types::OrderId id_;
-        types::Quantity remaining_;
-        types::TimePt timestamp_;
+        OrderId id_;
+        Quantity remaining_;
+        TimePt timestamp_;
         bool active_;
 
-        RestingOrder(types::OrderId id, types::Quantity remaining, types::TimePt timestamp)
+        RestingOrder(OrderId id, Quantity remaining, TimePt timestamp)
                 : id_{id},
                   remaining_{remaining},
                   timestamp_{timestamp},
                   active_{true} {}
     };
-}
+} // namespace core::order

@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "parser.hpp"
+#include "include/gateway/parser.hpp"
 
 namespace gateway {
     void to_lower(std::string &s) {

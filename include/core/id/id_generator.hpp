@@ -3,7 +3,7 @@
 #include <atomic>
 #include <cstdint>
 
-namespace id {
+namespace core::id {
 
     struct alignas(64) PaddedAtomic {
         std::atomic<uint64_t> value_;
@@ -30,4 +30,4 @@ namespace id {
         }
 
     };
-} // namespace id
+} // namespace core::id

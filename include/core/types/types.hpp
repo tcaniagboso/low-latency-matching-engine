@@ -3,12 +3,18 @@
 #include <chrono>
 #include <cstdint>
 
-namespace types {
-    enum class Side {BUY, SELL};
+namespace core::types {
+    enum class Side : uint8_t {
+        BUY,
+        SELL
+    };
 
-    enum class OrderType{LIMIT, MARKET};
+    enum class OrderType : uint8_t{
+        LIMIT,
+        MARKET
+    };
 
-    using Symbol = uint32_t;
+    using SymbolId = uint32_t;
 
     using TradeId = uint64_t;
     using OrderId = uint64_t;
@@ -16,4 +22,4 @@ namespace types {
     using PriceT = int64_t;
 
     using TimePt = std::chrono::system_clock::time_point;
-} // namespace types
+} // namespace core::types
